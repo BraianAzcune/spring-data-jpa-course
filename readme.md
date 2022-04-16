@@ -96,7 +96,7 @@ Hibernate:
 ```
 
 
-## mejorando el nombre del constraint unique correo.
+## mejorando el nombre del constraint unique correo
 
 si entramos al contenedor de la db
 
@@ -132,3 +132,28 @@ y debemos quitar de la columna correo, la constraint unique, para que tome la de
 
 Con esto ya si volvemos a re iniciar el servidor, podremos ver en los logs de Hibernate el cambio y ademas re ejecutando el comando que usamos para el contenedor postgres.
 
+## Repositorio 48:49
+
+Los repositorios nos ayudan a manipular las entidades en al DB.
+
+crear, actualizar, eliminar, leer, y realizar consultas.
+
+Los repositorios sirven como DAO en las POJO de Java.
+(Data Access Object) (Plain Old Java Object)
+estos nos ayudan reduciendo la cantidad de codigo boilerplate que hay que construir para la capa de acceso a datos.
+
+![repositorio](/docs/repositorio.png "repositorio")
+
+con Spring boot no es necesario crear un clase DAO, directamente lo que hacemos es crear una interfaz que hereda de JpaRepository<type,id>. Luego spring data, creara una clase que implemente esa interfaz, y generara todo el codigo. Tambien podemos definir metodos con cierta estructura y generara el codigo para ellos ej: findNombreAtributo. y tambien podemos crear metodos con nombres sin formato y con la anotacion @Query decirle cual sera la operacion.
+
+### probemoslo
+
+En la clase Application.java, si creamos un metodo que retorne un CommandLineRunner y tenga la anotacion @Bean , Spring boot lo ejecutara al iniciar el programa.
+
+luego podremos ver al iniciar el programa que el log de hibernate inserta una fila.
+tambien si entramos al docker y ejecutamos el comando:
+
+```bash
+table estudiante;
+```	
+veremos que esta la tabla con el estudiante agregado.

@@ -37,8 +37,7 @@ public class Estudiante {
     public Estudiante() {
     }
 
-    public Estudiante(Long id, String nombre, String apellido, String correo, Integer edad) {
-        this.id = id;
+    public Estudiante(String nombre, String apellido, String correo, Integer edad) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.correo = correo;
