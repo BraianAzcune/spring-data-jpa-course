@@ -7,11 +7,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import lombok.Getter;
 import lombok.Setter;
 
-@Table
+@Table(name = "estudiante", uniqueConstraints = {
+        @UniqueConstraint(name = "estudiante_correo_unique", columnNames = "correo")
+})
 @Entity(name = "estudiante")
 @Getter
 @Setter
@@ -26,7 +29,7 @@ public class Estudiante {
     private String nombre;
     @Column(name = "apellido", nullable = false)
     private String apellido;
-    @Column(name = "correo", nullable = false, unique = true, length = 320)
+    @Column(name = "correo", nullable = false, length = 320)
     private String correo;
     @Column(name = "edad", nullable = false)
     private Integer edad;

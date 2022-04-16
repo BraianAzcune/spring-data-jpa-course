@@ -1,6 +1,7 @@
 # Curso Spring boot Data JPA, profesor: AmigosCode
 
-https://www.youtube.com/watch?v=8SGI_XS5OPw&list=WL&index=127&t=75s&ab_channel=Amigoscode 
+https://www.youtube.com/watch?v=8SGI_XS5OPw&list=WL&index=127&t=75s&ab_channel=Amigoscode
+
 ## overview
 
 Spring Data JPA es una abstraccion, y hiberante es una implementaciones de esta abstraccion.
@@ -8,7 +9,7 @@ Spring Data JPA es una abstraccion, y hiberante es una implementaciones de esta 
 nosotros en nuestro codigo usamos JPA para ser independientes de la implementacion de hibernate y poder cambiarlo facilmente.
 
 Hibernate es un ORM (object relational mapping) que nos permite mapear objetos de nuestra aplicacion a una base de datos.
- 
+
 ![overview](/docs/overview.png "overview")
 
 ## Corriendo la aplicacion y conectarse a db postgres docker 9:07
@@ -21,9 +22,11 @@ crearemos un docker-compose.yml con la configuracion para levantar facilmente en
 tambien creamos un .env de las propiedades que tendra el postgres. y seteamos usuario y password en el application.properties.
 
 Creamos construimos el contenedor con:
+
 ```bash
 docker-compose -f docker-compose.yml up --build
 ```
+
 para ejecutarlo:
 
 ```bash
@@ -31,7 +34,7 @@ docker-compose -f docker-compose.yml up
 ```
 
 pararlo:
-    
+
 ```bash
 docker-compose -f docker-compose.yml down
 ```
@@ -60,12 +63,11 @@ copiar todo lo de <dependecy> y agregarlo a .pom, luego re cargar el proyecto. p
 
 luego agregar arriba de la clase Estudiante las anotaciones @Getter, @Setter
 
-
 ### Creando autoincrementable id
 
 Dado nuestros requisitos de no requerir un registro secuencial estricto, y que usamos una DB no MYsql la mejor opcion en rendimiento para hibernate es usar una secuaencia. Para eso debemos declarar un secuenciador y decirle al GenerationType que usaremos secuencias.
 
-https://www.adictosaltrabajo.com/2019/12/26/hibernate-uso-de-generationtype-y-otras-anotaciones/ 
+https://www.adictosaltrabajo.com/2019/12/26/hibernate-uso-de-generationtype-y-otras-anotaciones/
 
 ### personalizando las columnas
 
@@ -77,8 +79,8 @@ despues de crear todo podemos ver en los logs de hibernate que esta todo lo que 
 
 ```bash
 Hibernate: create sequence estudiante_seq start 1 increment 1
-Hibernate: 
-    
+Hibernate:
+
     create table estudiante (
        id int8 not null,
         apellido varchar(255) not null,
@@ -87,8 +89,46 @@ Hibernate:
         nombre varchar(255) not null,
         primary key (id)
     )
-Hibernate: 
-    
-    alter table estudiante 
+Hibernate:
+
+    alter table estudiante
        add constraint UK_f6a7ekbom6tl1l43x4ko45x0o unique (correo)
 ```
+
+
+## mejorando el nombre del constraint unique correo.
+
+si entramos al contenedor de la db
+
+```bash
+docker exec -it amigoscode-spring-data-jpa-postgres-db psql -U braian amigoscode
+```
+
+y mostramos la informacion de la tabla estudiante.
+```bash
+amigoscode=# \d+ estudiante
+                                                Table "public.estudiante"
+  Column  |          Type          | Collation | Nullable | Default | Storage  | Compression | Stats target | Description
+----------+------------------------+-----------+----------+---------+----------+-------------+--------------+-------------
+ id       | bigint                 |           | not null |         | plain    |             |              |
+ apellido | character varying(255) |           | not null |         | extended |             |              |
+ correo   | character varying(320) |           | not null |         | extended |             |              |
+ edad     | integer                |           | not null |         | plain    |             |              |
+ nombre   | character varying(255) |           | not null |         | extended |             |              |
+Indexes:
+    "estudiante_pkey" PRIMARY KEY, btree (id)
+    "uk_f6a7ekbom6tl1l43x4ko45x0o" UNIQUE CONSTRAINT, btree (correo)
+```
+podemos ver la restriccion es bastante larga y poco descriptiva.
+
+cambiemos esto, para eso tenemos que ir a nuestra clase Estudiante y agregar a la anotacion @Table 
+
+```java
+@Table(name = "estudiante", uniqueConstraints = {
+        @UniqueConstraint(name = "estudiante_correo_unique", columnNames = "correo")
+})
+```
+y debemos quitar de la columna correo, la constraint unique, para que tome la de @Table.
+
+Con esto ya si volvemos a re iniciar el servidor, podremos ver en los logs de Hibernate el cambio y ademas re ejecutando el comando que usamos para el contenedor postgres.
+
