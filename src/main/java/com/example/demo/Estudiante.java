@@ -1,23 +1,34 @@
 package com.example.demo;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Table
-@Entity
+@Entity(name = "estudiante")
 @Getter
 @Setter
 public class Estudiante {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "estudiante_seq")
+    @SequenceGenerator(name = "estudiante_seq", sequenceName = "estudiante_seq", allocationSize = 1)
+    @Column(name = "id", updatable = false)
     private Long id;
+    @Column(name = "nombre", nullable = false)
     private String nombre;
+    @Column(name = "apellido", nullable = false)
     private String apellido;
+    @Column(name = "correo", nullable = false, unique = true, length = 320)
     private String correo;
+    @Column(name = "edad", nullable = false)
     private Integer edad;
 
     public Estudiante() {

@@ -59,3 +59,36 @@ https://projectlombok.org/setup/maven
 copiar todo lo de <dependecy> y agregarlo a .pom, luego re cargar el proyecto. para añadirlo.
 
 luego agregar arriba de la clase Estudiante las anotaciones @Getter, @Setter
+
+
+### Creando autoincrementable id
+
+Dado nuestros requisitos de no requerir un registro secuencial estricto, y que usamos una DB no MYsql la mejor opcion en rendimiento para hibernate es usar una secuaencia. Para eso debemos declarar un secuenciador y decirle al GenerationType que usaremos secuencias.
+
+https://www.adictosaltrabajo.com/2019/12/26/hibernate-uso-de-generationtype-y-otras-anotaciones/ 
+
+### personalizando las columnas
+
+es buena practica definir el nombre de cada columna respetando la nomenclatura de SQL snake case.
+
+Con respecto al correo, si estuvieramos en un proyecto de spring completo podriamos usar javax.validation y utilizar el anotador @Size, que tiene mas potencia que el @Column(length=320). Ya que @Size servira para evitar instancar objetos que superen el valor creado, evitando enviarle valores no aceptables a la DB, y ademas la DB, deberia crear una columna de 320 caracteres.
+
+despues de crear todo podemos ver en los logs de hibernate que esta todo lo que mostramos en la imagen que necesitabamos:
+
+```bash
+Hibernate: create sequence estudiante_seq start 1 increment 1
+Hibernate: 
+    
+    create table estudiante (
+       id int8 not null,
+        apellido varchar(255) not null,
+        correo varchar(320) not null,
+        edad int4 not null,
+        nombre varchar(255) not null,
+        primary key (id)
+    )
+Hibernate: 
+    
+    alter table estudiante 
+       add constraint UK_f6a7ekbom6tl1l43x4ko45x0o unique (correo)
+```
