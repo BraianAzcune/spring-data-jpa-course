@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  postgres_db:
+    image: postgres:14.1
+    container_name: amigoscode-spring-data-jpa-postgres-db
+    volumes:
+      - amigoscode_spring_data_jpa_postgres_data:/var/lib/postgresql/data
+    env_file:
+      - ./.postgres.env
+    ports:
+      - "5600:5432"
+volumes:
+  amigoscode_spring_data_jpa_postgres_data:
